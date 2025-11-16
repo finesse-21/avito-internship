@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Card,
@@ -30,6 +30,7 @@ import {
   getStatusColor,
   getPriorityText,
 } from '../utils/helpers';
+import { useHotkeys } from '../hooks/useHotkeys';
 
 const { Title, Paragraph } = Typography;
 
@@ -39,6 +40,8 @@ const AdDetail = () => {
   const [ad, setAd] = useState<Advertisement | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const approveRef = useRef<(() => void) | null>(null);
+  const rejectRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -92,6 +95,24 @@ const AdDetail = () => {
       navigate(`/item/${ad.id + 1}`);
     }
   };
+
+  useHotkeys(
+    {
+      a: () => {
+        if (ad && ad.status === 'pending' && approveRef.current) {
+          approveRef.current();
+        }
+      },
+      d: () => {
+        if (ad && ad.status === 'pending' && rejectRef.current) {
+          rejectRef.current();
+        }
+      },
+      arrowleft: handlePrevious,
+      arrowright: handleNext,
+    },
+    !loading && !!ad
+  );
 
   if (loading) {
     return (
@@ -203,6 +224,8 @@ const AdDetail = () => {
               onReject={handleReject}
               onRequestChanges={handleRequestChanges}
               disabled={ad.status === 'approved' || ad.status === 'rejected'}
+              approveRef={approveRef}
+              rejectRef={rejectRef}
             />
           </Card>
         </Col>

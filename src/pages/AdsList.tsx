@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Row, Col, Pagination, Spin, Alert, Typography } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import AdCard from '../components/AdCard/AdCard';
@@ -6,6 +6,7 @@ import AdsFiltersComponent from '../components/Filters/AdsFilters';
 import { adsApi } from '../services/api';
 import type { Advertisement, AdsFilters, AdStatus } from '../types';
 import { parseQueryString } from '../utils/helpers';
+import { useHotkeys } from '../hooks/useHotkeys';
 
 const { Title } = Typography;
 
@@ -15,6 +16,7 @@ const AdsList = () => {
   const [error, setError] = useState<string | null>(null);
   const [totalItems, setTotalItems] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchInputRef = useRef<(() => void) | null>(null);
 
   const [filters, setFilters] = useState<AdsFilters>(() => {
     const params = parseQueryString(searchParams.toString());
@@ -89,6 +91,17 @@ const AdsList = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  useHotkeys(
+    {
+      '/': () => {
+        if (searchInputRef.current) {
+          searchInputRef.current();
+        }
+      },
+    },
+    !loading
+  );
+
   return (
     <div>
       <Title level={2}>Список объявлений</Title>
@@ -97,6 +110,7 @@ const AdsList = () => {
         filters={filters}
         onFiltersChange={handleFiltersChange}
         categories={categories}
+        searchInputRef={searchInputRef}
       />
 
       {error && (

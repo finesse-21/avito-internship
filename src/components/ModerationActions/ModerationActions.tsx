@@ -1,6 +1,6 @@
 import { Button, Space, Modal, Form, Select, Input, message } from 'antd';
 import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, type RefObject } from 'react';
 import type { RejectReason } from '../../types';
 
 interface ModerationActionsProps {
@@ -9,6 +9,8 @@ interface ModerationActionsProps {
   onReject: (reason: RejectReason, comment?: string) => Promise<void>;
   onRequestChanges: (reason: RejectReason, comment?: string) => Promise<void>;
   disabled?: boolean;
+  approveRef?: RefObject<(() => void) | null>;
+  rejectRef?: RefObject<(() => void) | null>;
 }
 
 const rejectReasons: RejectReason[] = [
@@ -25,6 +27,8 @@ const ModerationActions = ({
   onReject,
   onRequestChanges,
   disabled = false,
+  approveRef,
+  rejectRef,
 }: ModerationActionsProps) => {
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [changesModalVisible, setChangesModalVisible] = useState(false);
@@ -32,7 +36,7 @@ const ModerationActions = ({
   const [rejectForm] = Form.useForm();
   const [changesForm] = Form.useForm();
 
-  const handleApprove = async () => {
+  const handleApprove = useCallback(async () => {
     setLoading(true);
     try {
       await onApprove();
@@ -42,7 +46,23 @@ const ModerationActions = ({
     } finally {
       setLoading(false);
     }
+  }, [onApprove]);
+
+  const handleRejectClick = () => {
+    setRejectModalVisible(true);
   };
+
+  useEffect(() => {
+    if (approveRef) {
+      approveRef.current = handleApprove;
+    }
+  }, [approveRef, handleApprove]);
+
+  useEffect(() => {
+    if (rejectRef) {
+      rejectRef.current = handleRejectClick;
+    }
+  }, [rejectRef]);
 
   const handleRejectSubmit = async () => {
     try {
@@ -97,7 +117,7 @@ const ModerationActions = ({
           danger
           icon={<CloseOutlined />}
           size="large"
-          onClick={() => setRejectModalVisible(true)}
+          onClick={handleRejectClick}
           disabled={disabled}
         >
           Отклонить

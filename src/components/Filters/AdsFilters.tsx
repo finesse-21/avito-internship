@@ -1,11 +1,22 @@
-import { Form, Select, Input, Button, Row, Col, InputNumber } from 'antd';
+import {
+  Form,
+  Select,
+  Input,
+  Button,
+  Row,
+  Col,
+  InputNumber,
+  type InputRef,
+} from 'antd';
 import { SearchOutlined, ClearOutlined } from '@ant-design/icons';
+import { useEffect, useRef, type RefObject } from 'react';
 import type { AdsFilters } from '../../types';
 
 interface AdsFiltersProps {
   filters: AdsFilters;
   onFiltersChange: (filters: AdsFilters) => void;
   categories: { id: number; name: string }[];
+  searchInputRef?: RefObject<(() => void) | null>;
 }
 
 const statusOptions = [
@@ -30,8 +41,20 @@ const AdsFiltersComponent = ({
   filters,
   onFiltersChange,
   categories,
+  searchInputRef,
 }: AdsFiltersProps) => {
   const [form] = Form.useForm();
+  const inputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    if (searchInputRef) {
+      searchInputRef.current = () => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      };
+    }
+  }, [searchInputRef]);
 
   const handleValuesChange = (
     _: Partial<AdsFilters>,
@@ -65,6 +88,7 @@ const AdsFiltersComponent = ({
         <Col xs={24} sm={12} md={8} lg={6}>
           <Form.Item name="search" label="Поиск">
             <Input
+              ref={inputRef}
               placeholder="Название объявления"
               prefix={<SearchOutlined />}
               allowClear
