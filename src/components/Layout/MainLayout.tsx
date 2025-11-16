@@ -1,7 +1,12 @@
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Switch } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UnorderedListOutlined, BarChartOutlined } from '@ant-design/icons';
+import {
+  UnorderedListOutlined,
+  BarChartOutlined,
+  MoonOutlined,
+} from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { useTheme } from '../../hooks/useTheme';
 
 const { Header, Content } = Layout;
 
@@ -12,6 +17,7 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const menuItems: MenuProps['items'] = [
     {
@@ -58,6 +64,22 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           onClick={handleMenuClick}
           style={{ flex: 1, minWidth: 0 }}
         />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginLeft: '16px',
+          }}
+        >
+          <MoonOutlined style={{ color: 'white', fontSize: '18px' }} />
+          <Switch
+            checked={theme === 'dark'}
+            onChange={toggleTheme}
+            checkedChildren="Тёмная"
+            unCheckedChildren="Светлая"
+          />
+        </div>
       </Header>
       <Content style={{ padding: '24px' }}>{children}</Content>
     </Layout>
