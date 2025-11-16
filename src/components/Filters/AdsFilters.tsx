@@ -33,7 +33,10 @@ const AdsFiltersComponent = ({
 }: AdsFiltersProps) => {
   const [form] = Form.useForm();
 
-  const handleValuesChange = (allValues: any) => {
+  const handleValuesChange = (
+    _: Partial<AdsFilters>,
+    allValues: AdsFilters
+  ) => {
     onFiltersChange({
       ...filters,
       ...allValues,

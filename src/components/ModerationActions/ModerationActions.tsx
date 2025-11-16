@@ -37,7 +37,7 @@ const ModerationActions = ({
     try {
       await onApprove();
       message.success('Объявление одобрено');
-    } catch (error) {
+    } catch {
       message.error('Ошибка при одобрении объявления');
     } finally {
       setLoading(false);

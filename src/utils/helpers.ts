@@ -66,7 +66,7 @@ export const getPriorityColor = (priority: AdPriority): 'default' | 'error' => {
 };
 
 // Формирование URL с query параметрами
-export const buildQueryString = (params: Record<string, any>): string => {
+export const buildQueryString = (params: Record<string, unknown>): string => {
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Pagination, Spin, Alert, Typography } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import AdCard from '../components/AdCard/AdCard';
@@ -47,9 +47,24 @@ const AdsList = () => {
     { id: 7, name: 'Детское' },
   ];
 
+  const fetchAds = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await adsApi.getAds(filters);
+      setAds(response.ads);
+      setTotalItems(response.pagination.totalItems);
+    } catch (err) {
+      setError('Ошибка при загрузке объявлений');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
+
   useEffect(() => {
     fetchAds();
-  }, [filters]);
+  }, [fetchAds]);
 
   useEffect(() => {
     const params: Record<string, string> = {};
@@ -63,22 +78,7 @@ const AdsList = () => {
       }
     });
     setSearchParams(params);
-  }, [filters]);
-
-  const fetchAds = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await adsApi.getAds(filters);
-      setAds(response.ads);
-      setTotalItems(response.pagination.totalItems);
-    } catch (err) {
-      setError('Ошибка при загрузке объявлений');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [filters, setSearchParams]);
 
   const handleFiltersChange = (newFilters: AdsFilters) => {
     setFilters(newFilters);

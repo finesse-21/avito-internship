@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Typography, Select, Space, Spin, Alert, Row, Col } from 'antd';
 import StatsCards from '../components/Stats/StatsCards';
 import ActivityChart from '../components/Stats/ActivityChart';
@@ -28,11 +28,7 @@ const Stats = () => {
     {}
   );
 
-  useEffect(() => {
-    fetchStats();
-  }, [period]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -54,7 +50,11 @@ const Stats = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const periodOptions = [
     { label: 'Сегодня', value: 'today' },
