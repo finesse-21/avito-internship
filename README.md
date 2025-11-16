@@ -1,73 +1,228 @@
-# React + TypeScript + Vite
+# Система модерации объявлений Авито
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-приложение для модерации объявлений на платформе Авито. Разработано в рамках тестового задания на стажировку Frontend-разработчика (осенняя волна 2025).
 
-Currently, two official plugins are available:
+## Описание
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Это упрощённая версия внутренней системы, которую используют модераторы для проверки и управления объявлениями пользователей. Приложение позволяет просматривать список объявлений, фильтровать их по различным параметрам, детально изучать каждое объявление и принимать решения о модерации.
 
-## React Compiler
+## Функциональность
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Основной функционал
 
-## Expanding the ESLint configuration
+- **Список объявлений** (`/list`)
+  - Отображение карточек с основной информацией
+  - Фильтрация по статусу, категории, цене
+  - Поиск по названию
+  - Сортировка по дате, цене, приоритету
+  - Пагинация (10 объявлений на страницу)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Детальный просмотр** (`/item/:id`)
+  - Галерея изображений
+  - Полное описание и характеристики
+  - Информация о продавце
+  - История модерации
+  - Панель действий модератора (одобрить/отклонить/вернуть на доработку)
+  - Навигация между объявлениями
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Статистика** (`/stats`)
+  - Карточки с общими метриками
+  - График активности по дням
+  - Распределение решений
+  - Статистика по категориям
+  - Фильтр по периоду (сегодня/7 дней/30 дней)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Дополнительные возможности
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **Горячие клавиши**
+  - `A` — одобрить объявление
+  - `D` — отклонить объявление
+  - `←` — предыдущее объявление
+  - `→` — следующее объявление
+  - `/` — фокус на поиск
+
+- **Тёмная тема**
+  - Переключатель в шапке приложения
+  - Сохранение выбора в localStorage
+
+- **URL-синхронизация**
+  - Все фильтры сохраняются в URL
+  - Можно поделиться ссылкой с нужными фильтрами
+
+## Технологии
+
+### Основной стек
+
+- **React 18.3.1** — основной фреймворк
+- **TypeScript** — типизация для повышения надёжности кода
+- **Vite** — быстрая сборка и dev-сервер
+- **React Router v6** — клиентский роутинг
+
+### UI и стилизация
+
+- **Ant Design 5.x** — компонентная библиотека
+
+  Выбрал Ant Design, потому что:
+  - Большой набор готовых компонентов (Table, Form, Modal и т.д.)
+  - Встроенная поддержка тёмной темы
+  - Хорошая документация на русском
+  - Подходит для бизнес-приложений вроде админок
+
+### Работа с данными
+
+- **Axios** — HTTP-клиент для работы с API
+
+  Преимущества перед fetch:
+  - Автоматическая обработка JSON
+  - Interceptors для обработки ошибок
+  - Удобная отмена запросов
+
+### Графики
+
+- **Recharts** — библиотека для визуализации данных
+
+  Выбрал за простоту интеграции с React и достаточный набор типов графиков для статистики.
+
+### Качество кода
+
+- **ESLint** — линтинг кода
+- **Prettier** — форматирование
+- **Jest + Testing Library** — юнит-тесты (покрытие 66%)
+
+### Контейнеризация
+
+- **Docker** — контейнеризация приложения
+- **Docker Compose** — оркестрация frontend и backend
+
+## Установка и запуск
+
+### Требования
+
+- Node.js v20
+- npm или yarn
+- Docker и Docker Compose (для запуска в контейнерах)
+
+### Локальный запуск
+
+1. Клонируйте репозиторий:
+
+```bash
+git clone https://github.com/finesse-21/avito-internship.git
+cd avito-internship
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Установите зависимости для клиента:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+3. Установите зависимости для сервера:
+
+```bash
+cd tech-int3-server
+npm install
+cd ..
+```
+
+4. Запустите backend (в первом терминале):
+
+```bash
+cd tech-int3-server
+npm start
+```
+
+Сервер запустится на `http://localhost:3001`
+
+5. Запустите frontend (во втором терминале):
+
+```bash
+npm run dev
+```
+
+Приложение откроется на `http://localhost:5173`
+
+### Запуск в Docker
+
+Самый простой способ запустить всё приложение целиком:
+
+```bash
+docker-compose up --build
+```
+
+Приложение будет доступно на `http://localhost`
+
+Для остановки:
+
+```bash
+docker-compose down
+```
+
+## Структура проекта
+
+```
+avito-moderation-app/
+├── src/
+│   ├── components/        # React-компоненты
+│   │   ├── AdCard/       # Карточка объявления
+│   │   ├── Filters/      # Компонент фильтров
+│   │   ├── Layout/       # Основной layout
+│   │   └── ...
+│   ├── pages/            # Страницы приложения
+│   │   ├── AdsList.tsx   # Список объявлений
+│   │   ├── AdDetail.tsx  # Детальный просмотр
+│   │   └── Stats.tsx     # Статистика
+│   ├── services/         # API-сервисы
+│   ├── hooks/            # Кастомные хуки
+│   ├── contexts/         # React contexts
+│   ├── types/            # TypeScript типы
+│   └── utils/            # Утилиты
+├── tech-int3-server/     # Backend API
+├── docker-compose.yml    # Конфигурация Docker Compose
+└── Dockerfile           # Dockerfile для frontend
+```
+
+## Тестирование
+
+Запуск тестов:
+
+```bash
+npm test
+```
+
+Проверка покрытия:
+
+```bash
+npm run test:coverage
+```
+
+Текущее покрытие: **66.22%**
+
+## Линтинг и форматирование
+
+```bash
+npm run lint          # Проверка кода
+npm run format        # Форматирование
+```
+
+## Что можно улучшить
+
+Если бы было больше времени, я бы добавил:
+
+- Массовые операции (bulk actions) для одновременной модерации нескольких объявлений
+- Сохранение пресетов фильтров
+- Экспорт статистики в CSV/PDF
+- Анимации переходов между страницами
+- Real-time обновления через WebSocket
+- E2E тесты с Playwright
+- Увеличение покрытия тестами до 80%+
+
+## Автор
+
+Егор Алексеенко
+
+- GitHub: [@finesse-21](https://github.com/finesse-21)
+
+---
+
+Разработано в рамках тестового задания для стажировки в Авито (осенняя волна 2025)
